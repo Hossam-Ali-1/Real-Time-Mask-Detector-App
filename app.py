@@ -4,14 +4,14 @@ import numpy as np
 import tensorflow as tf
 import sys
 import os
-sys.path.append(os.path.join(os.getcwd(), 'Tensorflow', 'workspace', 'models', 'research'))
-sys.path.append(os.path.join(os.getcwd(), 'Tensorflow', 'workspace', 'models', 'research', 'slim'))
+sys.path.append(os.path.join(os.getcwd(), 'object_detection'))
+sys.path.append(os.path.join(os.getcwd(), 'slim'))
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as viz_utils
 from PIL import Image
 
 # --- Path Setup ---
-WORKSPACE_PATH = 'Tensorflow/workspace'
+WORKSPACE_PATH = 'Tensorflow'
 MODEL_PATH = os.path.join(WORKSPACE_PATH, 'models', 'my_ssd_mobnet', 'exported-model', 'saved_model')
 LABELMAP_PATH = os.path.join(WORKSPACE_PATH, 'annotations', 'label_map.pbtxt')
 
