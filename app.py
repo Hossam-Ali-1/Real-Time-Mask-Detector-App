@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.getcwd(), 'slim'))
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as viz_utils
 from PIL import Image
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 
 # --- Path Setup ---
 WORKSPACE_PATH = 'Tensorflow'
