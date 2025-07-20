@@ -19,9 +19,9 @@ LABELMAP_PATH = os.path.join(WORKSPACE_PATH, 'annotations', 'label_map.pbtxt')
 # --- Load Model (Cached) ---
 @st.cache_resource
 def load_model():
-    print("🔄 Loading model...")
+    st.info("🔄 Loading detection model...")
     detect_fn = tf.saved_model.load(MODEL_PATH)
-    print("✅ Model loaded successfully!")
+    st.success("✅ Model loaded successfully!")
     return detect_fn
 
 @st.cache_resource
