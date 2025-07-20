@@ -175,61 +175,63 @@ if option == "Upload Image":
 
 # --- Live Camera Option ---
 elif option == "Live Camera":
-    # Initialize webcam
-    cap = cv2.VideoCapture(0)
+    st.warning("Note: For best results in Streamlit Cloud, please use Chrome or Edge browser.")
     
-    if not cap.isOpened():
-        st.error("Could not open camera. Please check your camera settings.")
-    else:
-        FRAME_WINDOW = st.image([])
-        stop_button = st.button("Stop Camera")
-        
-        # Create a single container for detection results
-        result_container = st.empty()
-        
-        while cap.isOpened() and not stop_button:
-            ret, frame = cap.read()
-            if not ret:
-                st.error("Failed to capture frame from camera.")
-                break
+    from streamlit_webrtc import webrtc_streamer, VideoTransformerBase, RTCConfiguration
+    
+    class VideoTransformer(VideoTransformerBase):
+        def transform(self, frame):
+            img = frame.to_ndarray(format="bgr24")
             
-            # Convert the frame from BGR to RGB
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            # Convert to RGB
+            img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             
             # Process the frame
-            processed_frame, classes, scores = process_image(frame_rgb)
+            processed_frame, classes, scores = process_image(img_rgb)
             
-            # Display the processed frame
-            FRAME_WINDOW.image(processed_frame)
+            # Convert back to BGR for display
+            processed_frame_bgr = cv2.cvtColor(processed_frame, cv2.COLOR_RGB2BGR)
             
-            # Check for detections
-            detected_objects = {}
+            # Store results for display
+            self.detected_objects = {}
             for i in range(len(scores)):
                 if scores[i] > 0.5:
                     class_name = category_index[classes[i]]['name']
-                    if class_name not in detected_objects or scores[i] > detected_objects[class_name]['score']:
-                        detected_objects[class_name] = {
+                    if class_name not in self.detected_objects or scores[i] > self.detected_objects[class_name]['score']:
+                        self.detected_objects[class_name] = {
                             'score': scores[i],
-                            'count': detected_objects.get(class_name, {}).get('count', 0) + 1
+                            'count': self.detected_objects.get(class_name, {}).get('count', 0) + 1
                         }
             
-            # Update the result container with latest results only
-            with result_container.container():
-                st.markdown('<div class="result-box">', unsafe_allow_html=True)
-                st.subheader("🎯 Live Detection Results:")
-                
-                if not detected_objects:
+            return processed_frame_bgr
+    
+    # Create a placeholder for results
+    result_placeholder = st.empty()
+    
+    # WebRTC streamer
+    ctx = webrtc_streamer(
+        key="example",
+        video_transformer_factory=VideoTransformer,
+        rtc_configuration=RTCConfiguration(
+            {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+        ),
+        media_stream_constraints={"video": True, "audio": False},
+    )
+    
+    # Display results
+    if ctx.video_transformer:
+        with result_placeholder.container():
+            st.markdown('<div class="result-box">', unsafe_allow_html=True)
+            st.subheader("🎯 Live Detection Results:")
+            
+            if hasattr(ctx.video_transformer, 'detected_objects'):
+                if not ctx.video_transformer.detected_objects:
                     st.warning("⚠️ No confident detections found.")
                 else:
-                    for obj, data in detected_objects.items():
+                    for obj, data in ctx.video_transformer.detected_objects.items():
                         st.write(f"- {obj}: {int(data['score']*100)}% confidence ({data['count']} detected)")
-                
-                st.markdown('</div>', unsafe_allow_html=True)
             
-            if stop_button:
-                break
-        
-        cap.release()
+            st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Footer ---
 st.markdown("---")
