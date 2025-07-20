@@ -20,9 +20,9 @@ LABELMAP_PATH = os.path.join(WORKSPACE_PATH, 'annotations', 'label_map.pbtxt')
 @st.cache_resource
 def load_model():
     try:
-        st.info("🔄 Loading detection model...")
+        #st.info("🔄 Loading detection model...")
         detect_fn = tf.saved_model.load(MODEL_PATH)
-        st.success("✅ Model loaded successfully!")
+        #st.success("✅ Model loaded successfully!")
         return detect_fn
     except Exception as e:
         st.error(f"❌ Failed to load model: {e}")
