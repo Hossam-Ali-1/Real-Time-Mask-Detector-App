@@ -1,8 +1,80 @@
 item { 
-	name:'Mask'
+	name:'face_with_mask'
 	id:1
 }
 item { 
-	name:'NoMask'
+	name:'mask_colorful'
 	id:2
+}
+item { 
+	name:'face_no_mask'
+	id:3
+}
+item { 
+	name:'face_with_mask_incorrect'
+	id:4
+}
+item { 
+	name:'mask_surgical'
+	id:5
+}
+item { 
+	name:'face_other_covering'
+	id:6
+}
+item { 
+	name:'scarf_bandana'
+	id:7
+}
+item { 
+	name:'eyeglasses'
+	id:8
+}
+item { 
+	name:'helmet'
+	id:9
+}
+item { 
+	name:'face_shield'
+	id:10
+}
+item { 
+	name:'sunglasses'
+	id:11
+}
+item { 
+	name:'hood'
+	id:12
+}
+item { 
+	name:'hat'
+	id:13
+}
+item { 
+	name:'goggles'
+	id:14
+}
+item { 
+	name:'hair_net'
+	id:15
+}
+item { 
+	name:'hijab_niqab'
+	id:16
+}
+item { 
+	name:'other'
+	id:17
+}
+item { 
+	name:'gas_mask'
+	id:18
+}
+item { 
+	name:'balaclava_ski_mask'
+	id:19
+}
+item { 
+	name:'turban'
+	id:20
 }
