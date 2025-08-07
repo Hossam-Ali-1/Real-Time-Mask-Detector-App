@@ -45,7 +45,7 @@ cvNet = cv2.dnn.readNetFromCaffe(prototxt_path, caffemodel_path)
 
 # --- Image Processing Functions ---
 def safe_crop(image, startX, startY, endX, endY):
-    """يتأكد من أن أبعاد القطع داخل الصورة"""
+    
     h, w = image.shape[:2]
     startX = max(0, startX)
     startY = max(0, startY)
@@ -54,13 +54,13 @@ def safe_crop(image, startX, startY, endX, endY):
     return image[startY:endY, startX:endX]
 
 def adjust_gamma(image, gamma=1.0):
-    """ضبط إضاءة الصورة"""
+    
     invGamma = 1.0 / gamma
     table = np.array([(i / 255.0) ** invGamma * 255 for i in np.arange(256)]).astype("uint8")
     return cv2.LUT(image, table)
 
 def preprocess_face(face):
-    """تجهيز الوجه للتنبؤ بواسطة النموذج"""
+    
     face_resized = cv2.resize(face, (IMG_SIZE, IMG_SIZE))
     face_normalized = face_resized.astype("float32") / 255.0
     return face_normalized.reshape(1, IMG_SIZE, IMG_SIZE, 3)
@@ -133,17 +133,13 @@ option = st.radio(
 )
 
 def detect_masks(image_np, is_live=False):
-    """الكشف عن الأقنعة في الصورة مع اختيار الإعدادات المناسبة"""
-    # اختيار الإعدادات بناءً على وضع التشغيل
+    
     settings = LIVE_SETTINGS if is_live else DEFAULT_SETTINGS
 
-    # تطبيق Gamma Correction
     image_np = adjust_gamma(image_np, gamma=settings['GAMMA'])
     orig = image_np.copy()
     (h, w) = image_np.shape[:2]
     
-        # استخدام الإعدادات المحددة للكشف
-        # استخدم blob بحجم أكبر من 300 لتحسين التقاط الوجوه الصغيرة
     blob = cv2.dnn.blobFromImage(cv2.resize(image_np, (settings['BLOB_SIZE'], settings['BLOB_SIZE'])), 
                                1.0, 
                                (settings['BLOB_SIZE'], settings['BLOB_SIZE']), 
@@ -160,7 +156,6 @@ def detect_masks(image_np, is_live=False):
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
             (startX, startY, endX, endY) = box.astype("int")
             
-            # تجاهل الوجوه الصغيرة جدًا
             if (endX - startX) < 30 or (endY - startY) < 30:
                 continue
                 
@@ -168,7 +163,6 @@ def detect_masks(image_np, is_live=False):
             if face.size == 0:
                 continue
                 
-            # فلترة الصورة الغامقة أو عديمة المعالم
             gray = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
             if gray.std() < 15:
                 continue
@@ -183,7 +177,6 @@ def detect_masks(image_np, is_live=False):
                 label_text = LABELS[label_Y]
                 color = COLORS[label_text]
                 
-                # رسم المستطيل والنتيجة
                 cv2.rectangle(image_np, (startX, startY), (endX, endY), color, 2)
                 cv2.putText(image_np, label_text, (startX, startY - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 1.2, color, 2)
