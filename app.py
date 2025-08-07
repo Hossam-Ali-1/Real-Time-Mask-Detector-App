@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import time
 from PIL import Image
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase, RTCConfiguration
 
 # --- Constants ---
